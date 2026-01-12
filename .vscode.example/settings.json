@@ -1,0 +1,16 @@
+{
+  "Lua.workspace.library": [
+    "${3rd}/love2d/library",
+    "lib"
+  ],
+  "Lua.runtime.version": "LuaJIT",
+  "Lua.workspace.checkThirdParty": false,
+  "[lua]": {
+    "editor.tabSize": 4
+  },
+  "cSpell.words": [
+    "LÖVE",
+    "luarocks",
+    "rockspec"
+  ]
+}

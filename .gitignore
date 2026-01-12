@@ -1,10 +1,14 @@
 # Compiled Lua sources
 luac.out
 
-# luarocks build files
+# luarocks
 *.src.rock
 *.zip
 *.tar.gz
+/luarocks
+/lua
+/lua_modules
+/.luarocks
 
 # Object files
 *.o
@@ -39,3 +43,5 @@ luac.out
 *.x86_64
 *.hex
 
+#  Editors
+.vscode/
