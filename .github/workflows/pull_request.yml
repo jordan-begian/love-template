@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pull_request_check:
+    name: Check Pull Request 🛠️
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🗃️
+        uses: actions/checkout@v4
+
+      - name: Install LuaJIT and LuaRocks 🌕🪨
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y luajit luarocks
+
+      - name: Configure LuaRocks 🪨
+        run: |
+          mkdir -p .luarocks
+          cp .github/.luarocks/config-5.1.lua .luarocks/config-5.1.lua
+
+      - name: Install Lua dependencies 📦
+        run: make install
+
+      - name: Lint — luacheck 🧹
+        run: make test-lint
+
+      - name: Unit tests — busted 🧪
+        run: make test-lua
+
+      - name: Structure assertions 🏗️
+        run: make test-scripts
+
+      - name: Makefile dry-run ⚙️
+        run: make test-dry-run
+
+  dependabot_pr:
+    needs: pull_request_check
+    name: Auto-merge Dependabot Updates
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout 🗃️
+        uses: actions/checkout@v6
+
+      - name: Approve Dependabot PR ✅
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge Dependabot PR 🚀
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
