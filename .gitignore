@@ -43,5 +43,14 @@ luac.out
 *.x86_64
 *.hex
 
-#  Editors
-.vscode/
+# Editors
+/.vscode
+
+# Build output
+/build
+
+# Temporary scratch files (AI agent working directory)
+/.tmp
+
+# Local Makefile overrides (copy from config.mk.example)
+config.mk

@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+#
+# Enforces conventional commits format:
+#   <type>(optional scope): <description>
+#
+# Valid types: feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert
+#
+# Examples:
+#   feat: add player movement system
+#   fix(states): prevent nil state on first load
+#   chore: update dependencies
+
+commit_message=$(cat "$1")
+
+conventional_commit_pattern="^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|revert)(\(.+\))?: .+"
+
+if ! echo "$commit_message" | grep -qE "$conventional_commit_pattern"; then
+    echo ""
+    echo "Invalid commit message format."
+    echo ""
+    echo "Expected: <type>(optional scope): <description>"
+    echo "Example:  feat: add player movement system"
+    echo "Example:  fix(states): prevent nil state on first load"
+    echo ""
+    echo "Valid types: feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert"
+    echo ""
+    exit 1
+fi

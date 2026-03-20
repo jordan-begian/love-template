@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+#
+# Pre-commit checks:
+#   1. Remove .gitkeep from any directory that now contains other files
+#   2. Run luacheck on staged Lua files to catch accidental globals (if luacheck is installed)
+
+set -e
+
+# --- 1. .gitkeep cleanup ---
+
+find . -name ".gitkeep" \
+    -not -path "./.git/*" | while read -r gitkeep_file; do
+
+    directory=$(dirname "$gitkeep_file")
+    other_files=$(find "$directory" -maxdepth 1 -not -name ".gitkeep" -not -path "$directory" | wc -l)
+
+    if [ "$other_files" -gt 0 ]; then
+        git rm -q --cached "$gitkeep_file"
+        rm -f "$gitkeep_file"
+    fi
+done
+
+# --- 2. luacheck ---
+
+if ! command -v luacheck > /dev/null 2>&1; then
+    echo "luacheck not found — skipping Lua global check (run 'make install' to install dev dependencies)"
+    exit 0
+fi
+
+staged_lua_files=$(git diff --cached --name-only --diff-filter=ACM | grep "\.lua$" || true)
+
+if [ -n "$staged_lua_files" ]; then
+    echo "$staged_lua_files" | xargs luacheck --config .luacheckrc
+fi

@@ -1,0 +1,17 @@
+# config.mk.example — copy to config.mk and customize for your local setup.
+# config.mk is gitignored; config.mk.example is committed.
+#
+# Variables here override rockspec defaults but are overridden by CLI args.
+# Usage: copy this file to config.mk, uncomment and set the values you need.
+
+# Game name override (default: parsed from rockspec `package` field)
+# GAME_NAME = mygame
+
+# Target platform for C extension inclusion in builds
+# Options: none (pure Lua), linux, macos, windows, all
+# Default: none — safe for pure-Lua projects; warns if C deps are detected
+# PLATFORM = none
+
+# Output directory for build artifacts
+# Default: build
+# BUILD_DIR = build
