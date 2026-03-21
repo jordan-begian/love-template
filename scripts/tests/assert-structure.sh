@@ -142,6 +142,42 @@ KNOWN_ROOT_HIDDEN=(
     .tmp
 )
 
+# --- Optional ignore list (env/file) -----------------------------------------
+#
+# You can optionally provide additional root-level entries that should be
+# ignored by the unexpected-entry check. This is useful for CI-only generated
+# directories (e.g., .lua created by a GitHub Action) without changing the
+# default strict behavior for local developers.
+#
+# Sources (applied in order):
+#  1) .assert-structure-ignore at the project root (one entry per line)
+#  2) ASSERT_IGNORE env var (comma or space separated list)
+#
+KNOWN_ROOT_IGNORED=()
+
+# (1) file-based ignores (one per line, trimmed)
+if [ -f "$PROJECT_ROOT/.assert-structure-ignore" ]; then
+    while IFS= read -r line; do
+        # Trim whitespace
+        entry="$(echo "$line" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+        [ -n "$entry" ] && KNOWN_ROOT_IGNORED+=("$entry")
+    done < "$PROJECT_ROOT/.assert-structure-ignore"
+fi
+
+# (2) ASSERT_IGNORE env var (comma or space separated)
+if [ -n "${ASSERT_IGNORE:-}" ]; then
+    # Normalize commas to spaces, then iterate
+    for entry in $(echo "$ASSERT_IGNORE" | tr ',' ' '); do
+        entry="$(echo "$entry" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+        [ -n "$entry" ] && KNOWN_ROOT_IGNORED+=("$entry")
+    done
+fi
+
+# Merge ignored entries into the hidden-known list so they are accepted as known.
+for ignored in "${KNOWN_ROOT_IGNORED[@]}"; do
+    KNOWN_ROOT_HIDDEN+=( "$ignored" )
+done
+
 # --- Known src/ subdirectories ------------------------------------------------
 #
 # Immediate subdirectories expected under src/. Anything else found there is

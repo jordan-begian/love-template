@@ -9,10 +9,17 @@ jobs:
   pull_request_check:
     name: Check Pull Request 🛠️
     runs-on: ubuntu-latest
+    env:
+      ASSERT_IGNORE: ".lua"
 
     steps:
       - name: Checkout 🗃️
         uses: actions/checkout@v4
+
+      - name: Install system build tools + Lua 5.1 🌙
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config lua5.1 liblua5.1-0-dev
 
       - name: Install LuaJIT 🌕
         uses: leafo/gh-actions-lua@v12
@@ -23,11 +30,34 @@ jobs:
         uses: leafo/gh-actions-luarocks@v6
         with:
           luarocksVersion: "3.11.1"
+          withLuaPath: "/usr"
 
-      - name: Configure LuaRocks 🪨
+      - name: Configure LuaRocks (CI-generated config) 🪨
         run: |
           mkdir -p .luarocks
-          cp .github/.luarocks/config-5.1.lua .luarocks/config-5.1.lua
+          cat > .luarocks/config-5.1.lua <<'EOF'
+          return {
+            lua_version = "5.1",
+            variables = {
+              LUA = ".lua/bin/luajit",
+              LUA_BINDIR = ".lua/bin",
+              LUA_DIR = ".lua",
+              LUA_INCDIR = "/usr/include/lua5.1",
+            }
+          }
+          EOF
+
+      - name: Validate Lua build environment ✅
+        run: |
+          echo "-- verify headers --"
+          ls -l /usr/include/lua5.1 || true
+          echo "-- head of lua.h --"
+          head -n 5 /usr/include/lua5.1/lua.h || true
+          echo "-- luajit (installed by action) --"
+          if [ -x ".lua/bin/luajit" ]; then .lua/bin/luajit -v; else echo "luajit not found at .lua/bin/luajit"; fi
+          echo "-- luarocks info --"
+          which luarocks || true
+          luarocks --version || true
 
       - name: Install Lua dependencies 📦
         run: make install

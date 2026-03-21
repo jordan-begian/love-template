@@ -11,7 +11,7 @@ A template made with ♥ for [LÖVE](https://love2d.org/) projects with organize
 >
 > I promise that while I use this template as a resource to explore game development, game assets (artwork, music, dialog, soundeffects, etc.) will be human made. From the game software development side -
 > agents will be used as tools to "automate the boring stuff", have reference data that follows the development best practices, and changes be reviewed by a human that has experience with writing and reviewing code.
-> No, the number of lines or number of commits are considered valid representations of development experience or skill...
+> No, the number of lines or number of commits are NOT considered valid representations of development experience or skill...
 >
 > When using this template I ask that you follow this approach, but it's up to you to choose what future you want to shape. 
 
