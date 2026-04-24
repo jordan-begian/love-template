@@ -22,7 +22,7 @@ jobs:
           sudo apt-get install -y build-essential pkg-config lua5.1 liblua5.1-0-dev
 
       - name: Install LuaJIT 🌕
-        uses: leafo/gh-actions-lua@v12
+        uses: leafo/gh-actions-lua@v13
         with:
           luaVersion: "luajit-2.1"
 
